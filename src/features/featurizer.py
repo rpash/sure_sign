@@ -19,7 +19,7 @@ class Featurizer:
         Store data in this object. The data stored here will be used to extract
         features using the featurization methods.
         Input:
-            data: The data to featurize. This is a (NxCxHxW) where
+            data: The data to featurize. This is a (NxCxHxW) matrix where
                 N = number of images
                 C = Image channels
                 H = Image height in pixels
