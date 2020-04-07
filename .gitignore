@@ -3,7 +3,7 @@
 
 # Data
 data/
-
+dataset/
 # Checkpoints
 checkpoints/
 
