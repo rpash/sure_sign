@@ -9,13 +9,10 @@ def featurize(data):
     # TODO implement this
     ret = []
     grayData = []
+    fftData = []
     
-    for i in data:
-        grayData.append(cv2.cvtColor(i, cv2.COLOR_BGR2GRAY))
-    
-    ret = [np.fft.fft(i) for i in grayData]
-    
-    for img in ret:
-        img = img.flatten()
+    grayData = [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in data]
+    fftData = [np.fft.fft(img) for img in grayData]
+    ret = [img.flatten() for img in fftData]
     
     return ret
