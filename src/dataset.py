@@ -40,8 +40,7 @@ def load_asl_alphabet(train_path, test_path, train_len=10000, test_len=10000):
         else:
             continue
         break
-    # Transform from list (N,H,W,C) to np.array (N,C,H,W)
-    X_train = np.array(X_train).transpose(0, 3, 1, 2)
+    X_train = np.array(X_train)
     y_train = np.array(y_train)
     print("Done")
 
@@ -57,8 +56,7 @@ def load_asl_alphabet(train_path, test_path, train_len=10000, test_len=10000):
         else:
             continue
         break
-    # Transform from list (N,H,W,C) to np.array (N,C,H,W)
-    X_test = np.array(X_test).transpose(0, 3, 1, 2)
+    X_test = np.array(X_test)
     y_test = np.array(y_test)
     print("Done")
 
