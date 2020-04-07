@@ -6,4 +6,4 @@ import numpy as np
 
 def featurize(data):
     # TODO implement this
-    return np.fft.fft(data)
+    return np.fft.fft2(data)
