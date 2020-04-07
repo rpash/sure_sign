@@ -1,3 +1,7 @@
 ---
 
 kaggle_dataset: "grassknoted/asl-alphabet" # Approx 1GB
+
+dataset:
+  test: "dataset/asl_alphabet_test"
+  train: "dataset/asl_alphabet_train"
