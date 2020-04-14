@@ -33,11 +33,7 @@ class Featurizer:
         Return:
             The original set of images transformed into a feature vector
         """
-        if "rgb" not in self.__featurizer:
-            # TODO create featurizer
-            pass
-
-        # TODO extract feature
+        return ft_rgb.featurize(data)
 
     def fft(self, data):
         """
