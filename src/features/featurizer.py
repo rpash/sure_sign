@@ -51,11 +51,7 @@ class Featurizer:
         Return:
             The image feature vectors extracted using FFT
         """
-        if "fft" not in self.__featurizer:
-            # TODO create featurizer
-            pass
-
-        # TODO extract feature
+        return ft_fft.featurize(data)
 
     def wavelet(self, data, wavelet="haar"):
         """

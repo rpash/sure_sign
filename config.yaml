@@ -10,3 +10,11 @@ featurizers:
   sift:
     pickle: "checkpoints/sift_pickle.z"
     feature_size: 200
+  surf:
+    pickle: "checkpoints/surf_pickle.z"
+    feature_size: 200
+  orb:
+    pickle: "checkpoints/orb_pickle.z"
+    feature_size: 200
+  wavelet:
+    wavelet: "haar"
