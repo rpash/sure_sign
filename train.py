@@ -31,8 +31,8 @@ def train():
             train_path, test_path, train_len=1000)
 
         featurizer = Featurizer()
-        features = featurizer.orb(X_train)
-        test_features = featurizer.orb(X_test)
+        features = featurizer.sift(X_train)
+        test_features = featurizer.sift(X_test)
 
         print(features.shape)
         print(test_features.shape)

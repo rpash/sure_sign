@@ -61,11 +61,7 @@ class Featurizer:
         Return:
             The image feature vectors extracted using DWT
         """
-        if "wavelet" not in self.__featurizer:
-            # TODO create featurizer
-            pass
-
-        # TODO extract feature
+        return ft_wavelet.featurize(data, wavelet)
 
     def sift(self, data, feature_size=200, pickle_path=None, retrain=False):
         """
