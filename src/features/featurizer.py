@@ -2,11 +2,10 @@
 Featurize images
 """
 
-import ft_rgb
-import ft_fft
-import ft_wavelet
-import ft_sift
-import ft_surf
+import src.features.ft_rgb as ft_rgb
+import src.features.ft_fft as ft_fft
+import src.features.ft_wavelet as ft_wavelet
+from src.features.ft_kmeans import KMeansFeaturizer
 
 
 class Featurizer:
@@ -14,75 +13,127 @@ class Featurizer:
     Featurize data and cache features
     """
 
-    def __init__(self, data):
+    def __init__(self):
         """
         Store data in this object. The data stored here will be used to extract
         features using the featurization methods.
+        """
+        # featurizer cache
+        self.__featurizer = {}
+
+    def rgb(self, data):
+        """
+        Transform the data into a feature vector without any transformation
         Input:
             data: The data to featurize. This is a (NxHxWxC) matrix where
                 N = number of images
                 C = Image channels
                 H = Image height in pixels
                 W = Image width in pixels
-        """
-        self.__data = data
-
-        # cached features
-        self.__features = {}
-
-        # featurization functions
-        self.__featurize = {"rgb": ft_rgb.featurize,
-                            "fft": ft_fft.featurize,
-                            "wavelet": ft_wavelet.featurize,
-                            "sift": ft_sift.featurize,
-                            "surf": ft_surf.featurize}
-
-    def __extract_featues(self, key):
-        """
-        Dynamic feature extraction based on given key. This is meant as a helper
-        function for the featurization methods.
-        """
-        if key not in self.__features:
-            self.__features[key] = self.__featurize[key](self.__data)
-
-        return self.__features[key]
-
-    def rgb(self):
-        """
-        Transform the data into a feature vector without any transformation
         Return:
             The original set of images transformed into a feature vector
         """
-        return self.__extract_featues("rgb")
+        if "rgb" not in self.__featurizer:
+            # TODO create featurizer
+            pass
 
-    def fft(self):
+        # TODO extract feature
+
+    def fft(self, data):
         """
         Construct a feature vector by applying FFT to the data
+        Input:
+            data: The data to featurize. This is a (NxHxWxC) matrix where
+                N = number of images
+                C = Image channels
+                H = Image height in pixels
+                W = Image width in pixels
         Return:
             The image feature vectors extracted using FFT
         """
-        return self.__extract_featues("fft")
+        if "fft" not in self.__featurizer:
+            # TODO create featurizer
+            pass
 
-    def wavelet(self):
+        # TODO extract feature
+
+    def wavelet(self, data, wavelet="haar"):
         """
         Construct a feature vector by applying DWT to the data
+        Input:
+            data: The data to featurize. This is a (NxHxWxC) matrix where
+                N = number of images
+                C = Image channels
+                H = Image height in pixels
+                W = Image width in pixels
         Return:
             The image feature vectors extracted using DWT
         """
-        return self.__extract_featues("wavelet")
+        if "wavelet" not in self.__featurizer:
+            # TODO create featurizer
+            pass
 
-    def sift(self):
+        # TODO extract feature
+
+    def sift(self, data, feature_size=200, pickle_path=None, retrain=False):
         """
         Construct a feature vector using SIFT
+        Input:
+            data: The data to featurize. This is a (NxHxWxC) matrix where
+                N = number of images
+                C = Image channels
+                H = Image height in pixels
+                W = Image width in pixels
+            feature_size: size of each feature vector.
+            pickle_path: path to model pickle file
+            retrain: whether to retrain the model using new data
         Return:
             The image feature vectors extracted using SIFT
         """
-        return self.__extract_featues("sift")
+        if "sift" not in self.__featurizer or retrain:
+            self.__featurizer["sift"] = KMeansFeaturizer(feature_size, "sift")
+            return self.__featurizer["sift"].train(data, pickle_path)
 
-    def surf(self):
+        return self.__featurizer["sift"].test(data)
+
+    def surf(self, data, feature_size=200, pickle_path=None, retrain=False):
         """
         Construct a feature vector using SURF
+        Input:
+            data: The data to featurize. This is a (NxHxWxC) matrix where
+                N = number of images
+                C = Image channels
+                H = Image height in pixels
+                W = Image width in pixels
+            feature_size: size of each feature vector
+            pickle_path: path to model pickle file
+            retrain: whether to retrain the model using new data
         Return:
             The image feature vectors extracted using SURF
         """
-        return self.__extract_featues("surf")
+        if "surf" not in self.__featurizer or retrain:
+            self.__featurizer["surf"] = KMeansFeaturizer(feature_size, "surf")
+            return self.__featurizer["surf"].train(data, pickle_path)
+
+        return self.__featurizer["surf"].test(data)
+
+    def orb(self, data, feature_size=200, pickle_path=None, retrain=False):
+        """
+        Construct a feature vector using ORB
+        Input:
+            data: The data to featurize. This is a (NxHxWxC) matrix where
+                N = number of images
+                C = Image channels
+                H = Image height in pixels
+                W = Image width in pixels
+            feature_size: size of each feature vector
+            pickle_path: path to model pickle file
+            retrain: whether to retrain the model using new data
+        Return:
+            The image feature vectors extracted using ORB
+        """
+        if "orb" not in self.__featurizer or retrain:
+            self.__featurizer["orb"] = KMeansFeaturizer(feature_size, "orb")
+            return self.__featurizer["orb"].train(data, pickle_path)
+
+        return self.__featurizer["orb"].test(data)

@@ -1,44 +1,79 @@
 """
-Featurization method for SURF
+Featurization method collection for image descriptors quantized by k-means
 """
 import os
 from multiprocessing import Pool
+import itertools
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 import cv2
 import src.utils as utils
 
 
-def _compute_features(data):
+def _get_featurizer(featurizer_name):
     """
-    Compute SURF features for a batch of images
+    Creates a image keypoint featurizer from its name. Supports:
+        - SIFT
+        - SURF
+        - ORB
+    Input:
+        featurizer_name: name of the featurizer
+    Output:
+        featurizer: An instance of the keypoint featurizer
+    """
+    if featurizer_name == 'sift':
+        return cv2.xfeatures2d.SIFT_create()
+    elif featurizer_name == 'surf':
+        return cv2.xfeatures2d.SURF_create()
+    elif featurizer_name == 'orb':
+        return cv2.ORB_create()
+    return None
+
+
+def _compute_features(args):
+    """
+    Compute keypoint features for a batch of images
     Input:
         data: (N,H,W[,C]) matrix of N training images
     Output:
         features: (N, M) matrix of M-length feature vectors of N images
     """
-    # SURF uses 128 element feature vector
-    surf = cv2.xfeatures2d.SURF_create()
+    featurizer = _get_featurizer(args[1])
     descriptors = []
-    for img in data:
-        _, desc = surf.detectAndCompute(img, None)
+    no_det = []  # need to keep track of no detections to fill them with zeros
+    for i, img in enumerate(args[0]):
+        _, desc = featurizer.detectAndCompute(img, None)
+        descriptors.append(desc)
+        if desc is None:
+            no_det.append(i)
+
+    # feature length varies so we need to find the correct length
+    # if all images had no detections we are screwed anyway so don't worry
+    fill_in = None
+    for desc in descriptors:
         if desc is not None:
-            descriptors.append(desc)
+            fill_in = np.zeros(desc.shape)
+            break
+
+    for i in no_det:
+        descriptors[i] = fill_in
+
     return descriptors
 
 
-class SurfFeaturizer:
-    def __init__(self, vocab_size):
+class KMeansFeaturizer:
+    def __init__(self, vocab_size, featurizer="sift"):
         self.__vocab_size = vocab_size
         self.__kmeans = None
-        self.__surf = cv2.xfeatures2d.SURF_create()
+        self.__name = featurizer
+        self.__featurizer = _get_featurizer(featurizer)
 
     def train(self, data, pickle_path=None):
         """
-        Train this featurizaer on the training set using the following procedure
-        1. Compute the SURF descriptors for each image. SURF descriptors are
-           128-length vectors for each detected keypoint in an image. There can
-           be an arbitrary number of keypoints per image
+        Train this featurizer on the training set using the following procedure
+        1. Compute the keypoint descriptors for each image. keypoint descriptors
+           are M-length vectors for each detected keypoint in an image. There
+           can be an arbitrary number of keypoints per image
         2. Perform k-means clustering on the set of all descriptors gathered
            from all images. The descriptors will be divided into K groups (K is
            specified in the constructor). The distribution of an image's
@@ -61,18 +96,25 @@ class SurfFeaturizer:
                 print("Skipping training")
                 return self.test(data)
 
+        # Use multiple processes to calculate descriptors
+        # Use all but one thread if possible to prevent crashes when
+        # using all threads. Pool doesn't like it when there is not much data
+        # so if there is only need for 1 processor we don't pool. Otherwise we
+        # will block indefinitely for some reason.
         n_images = data.shape[0]
         features = np.zeros((n_images, self.__vocab_size))
         nprocs = (os.cpu_count() - 1) if os.cpu_count() > 1 else 1
-        print("Computing SIFT descriptors using {} processes".format(nprocs))
-
-        # Use multiple processes to calculate descriptors
-        # Use all but one thread if possible to prevent crashes when
-        # using all threads
-        subsets = np.array_split(data, nprocs, axis=0)
-        pool = Pool(processes=nprocs)
-        batch_descriptors = pool.map(_compute_features, subsets)
-        img_descriptors = np.concatenate([desc for desc in batch_descriptors])
+        nprocs = nprocs if n_images > (nprocs * 20) else 1
+        print("Computing {} descriptors using {} processes".format(
+            self.__name.upper(), nprocs))
+        if nprocs > 1:
+            subsets = np.array_split(data, nprocs, axis=0)
+            pool = Pool(processes=nprocs)
+            pool_args = zip(subsets, itertools.repeat(self.__name))
+            batch_descriptors = pool.map(_compute_features, pool_args)
+            img_descriptors = np.concatenate([d for d in batch_descriptors])
+        else:
+            img_descriptors = _compute_features((data, self.__name))
 
         # Reshape data so that we can give k-means a list of descriptors
         # while maintaining a descriptor->image mapping which we will need
@@ -131,7 +173,11 @@ class SurfFeaturizer:
             return None
 
         features = np.zeros(self.__vocab_size)
-        _, desc = self.__sift.detectAndCompute(img, None)
+        _, desc = self.__featurizer.detectAndCompute(img, None)
+
+        # Occasionally no keypoints are detected so use empty vector
+        if desc is None:
+            return features
         pred = self.__kmeans.predict(desc)
         for vote in pred:
             features[vote] += 1

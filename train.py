@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import yaml
 import src.dataset as dataset
 
+from src.features.featurizer import Featurizer
 
 def full_path(path):
     """
@@ -22,11 +24,18 @@ def train():
         train_path = full_path(config["dataset"]["train"])
         test_path = full_path(config["dataset"]["test"])
 
-        print(train_path)
-        print(test_path)
+        sift_pickle = full_path(config["featurizers"]["sift"]["pickle"])
+        sift_feature_len = config["featurizers"]["sift"]["feature_size"]
 
         X_train, y_train, X_test, y_test = dataset.load_asl_alphabet(
-            train_path, test_path)
+            train_path, test_path, train_len=1000)
+
+        featurizer = Featurizer()
+        features = featurizer.orb(X_train)
+        test_features = featurizer.orb(X_test)
+
+        print(features.shape)
+        print(test_features.shape)
 
 if __name__ == '__main__':
     train()

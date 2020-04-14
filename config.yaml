@@ -5,3 +5,8 @@ kaggle_dataset: "grassknoted/asl-alphabet" # Approx 1GB
 dataset:
   test: "dataset/asl_alphabet_test"
   train: "dataset/asl_alphabet_train"
+
+featurizers:
+  sift:
+    pickle: "checkpoints/sift_pickle.z"
+    feature_size: 200
