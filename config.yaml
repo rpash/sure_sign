@@ -1,20 +1,29 @@
 ---
-
 kaggle_dataset: "grassknoted/asl-alphabet" # Approx 1GB
 
 dataset:
   test: "dataset/asl_alphabet_test"
   train: "dataset/asl_alphabet_train"
+  train_examples: 1000 # Training examples per class
 
 featurizers:
-  sift:
+  featurizer: "surf"
+  sift: # 23%
     pickle: "checkpoints/sift_pickle.z"
-    feature_size: 200
-  surf:
+    feature_size: 400
+  surf: # 31%
     pickle: "checkpoints/surf_pickle.z"
-    feature_size: 200
-  orb:
+    feature_size: 400
+  orb: # 17%
     pickle: "checkpoints/orb_pickle.z"
-    feature_size: 200
+    feature_size: 400
   wavelet:
     wavelet: "haar"
+
+classification:
+  classifier: "adaboost"
+  k-fold: 10 # Number of folds to use in k-fold cross validation
+  adaboost:
+    tree_max_depth: 1 # Decision tree max depth
+    n_estimators: 1000 # Number of decision stumps
+    learning_rate: 0.7

@@ -127,7 +127,9 @@ class KMeansFeaturizer:
         # k-means to determine a feature vector for each image
         # Use MiniBatchKmeans for speed
         self.__kmeans = MiniBatchKMeans(
-            n_clusters=self.__vocab_size).fit(descriptors)
+            batch_size=10, #smaller batch for less memory use
+            n_clusters=self.__vocab_size,
+            init_size=(3 * self.__vocab_size)).fit(descriptors)
 
         # We can assume that the image IDs calculated before correspond
         # to the correct k-means label because MiniBatchKMeans preserves order
