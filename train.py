@@ -29,8 +29,6 @@ def train():
         test_path = full_path(config["dataset"]["test"])
 
         ft_name = config["featurizers"]["featurizer"]
-        pickle = full_path(config["featurizers"][ft_name]["pickle"])
-        feature_len = config["featurizers"][ft_name]["feature_size"]
         clf_config = config["classification"]
         train_len = config["dataset"]["train_examples"]
         kfold = config["classification"]["k-fold"]
@@ -38,18 +36,31 @@ def train():
         X_train, y_train, X_test, y_test = dataset.load_asl_alphabet(
             train_path, test_path, train_len=train_len)
 
+        print(X_train.shape)
+        print(X_test.shape)
+
         featurizer = Featurizer()
+        if ft_name == "fft":
+            features = featurizer.fft(X_train)
+            test_features = featurizer.fft(X_test)
+            print(features.shape)
         if ft_name == "sift":
+            pickle = full_path(config["featurizers"][ft_name]["pickle"])
+            feature_len = config["featurizers"][ft_name]["feature_size"]
             features = featurizer.sift(
-                X_train, feature_size=feature_len)
+                X_train, feature_size=feature_len, pickle_path=pickle)
             test_features = featurizer.sift(X_test)
         elif ft_name == "surf":
+            pickle = full_path(config["featurizers"][ft_name]["pickle"])
+            feature_len = config["featurizers"][ft_name]["feature_size"]
             features = featurizer.surf(
-                X_train, feature_size=feature_len)
+                X_train, feature_size=feature_len, pickle_path=pickle)
             test_features = featurizer.surf(X_test)
         elif ft_name == "orb":
+            pickle = full_path(config["featurizers"][ft_name]["pickle"])
+            feature_len = config["featurizers"][ft_name]["feature_size"]
             features = featurizer.orb(
-                X_train, feature_size=feature_len)
+                X_train, feature_size=feature_len, pickle_path=pickle)
             test_features = featurizer.orb(X_test)
 
         clf = ASLClassifier(clf_config)

@@ -6,7 +6,6 @@ import os
 import cv2
 import numpy as np
 
-
 def label_to_number(label):
     """
     Convert a string label to a number label
@@ -45,7 +44,7 @@ def number_to_label(number):
     return "nothing"
 
 
-def load_asl_alphabet(train_path, test_path, train_len=10000):
+def load_asl_alphabet(train_path, test_path, train_len=1e4):
     """
     Load the ASL Alphabet dataset into memory. The number of test and train
     examples can be specified, but no more examples than exists can be returned.
@@ -80,6 +79,7 @@ def load_asl_alphabet(train_path, test_path, train_len=10000):
 
     X_train = np.array(X_train)
     y_train = np.array(y_train)
+
     print("Done")
 
     print("Loading ASL Alphabet test...", end="", flush=True)
@@ -91,6 +91,7 @@ def load_asl_alphabet(train_path, test_path, train_len=10000):
 
     X_test = np.array(X_test)
     y_test = np.array(y_test)
+
     print("Done")
 
     return X_train, y_train, X_test, y_test
