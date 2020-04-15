@@ -6,6 +6,9 @@ import numpy as np
 import pywt
 import cv2
 
+from sklearn import decomposition
+from sklearn import datasets
+
 def featurize(data, wavelet):
     """
     Compute the features of the given set of images using the discrete
@@ -32,6 +35,12 @@ def featurize(data, wavelet):
     # https://www.researchgate.net/publication/4319558_Feature_Extraction_Technique_using_Discrete_Wavelet_Transform_for_Image_Classification
     # https://www.sciencedirect.com/science/article/abs/pii/S0925231215017531?via%3Dihub
 
-    features = [pywt.dwt2(img, wavelet)[0].flatten() for img in data]
+    features = [pywt.wavedec2(img, wavelet)[0] for img in grey_data]
+    pca = decomposition.PCA(n_components=3)
+    pca.fit(features)
+    features = pca.transform(features)
+    '''
+    I attempted to implement wavedec2 and then perform PCA on it. Feel free to change it as appropriate.
+    '''
     return np.array(features)
 
