@@ -35,12 +35,15 @@ def featurize(data, wavelet):
     # https://www.researchgate.net/publication/4319558_Feature_Extraction_Technique_using_Discrete_Wavelet_Transform_for_Image_Classification
     # https://www.sciencedirect.com/science/article/abs/pii/S0925231215017531?via%3Dihub
 
+
     features = [pywt.wavedec2(img, wavelet)[0] for img in grey_data]
-    pca = decomposition.PCA(n_components=3)
-    pca.fit(features)
-    features = pca.transform(features)
-    '''
-    I attempted to implement wavedec2 and then perform PCA on it. Feel free to change it as appropriate.
-    '''
+    
+    # robust implementation of jpeg method (deleting the smallest elements from the feature vector via hard-thresholding)
+    weight = 0.975 # chosen as a means to reduce by 97.5% (40k to ~1k)
+    for i in features:
+        for j in i:
+            if j < (max(max(features)))-min(min(features)))*weight:
+                del j
+    
     return np.array(features)
 
