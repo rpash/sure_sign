@@ -8,13 +8,13 @@ dataset:
 
 featurizers:
   featurizer: "surf"
-  sift: # 23%
+  sift: # 63.5%
     pickle: "checkpoints/sift_pickle.z"
     feature_size: 400
-  surf: # 57%
+  surf: # 68%
     pickle: "checkpoints/surf_pickle.z"
     feature_size: 400
-  orb: # 17%
+  orb: # 28%
     pickle: "checkpoints/orb_pickle.z"
     feature_size: 400
   wavelet:
@@ -22,8 +22,8 @@ featurizers:
 
 classification:
   classifier: "adaboost"
-  k-fold: 5 # Number of folds to use in k-fold cross validation
+  k-fold: 10 # Number of folds to use in k-fold cross validation
   adaboost:
-    tree_max_depth: 2 # Decision tree max depth
+    tree_max_depth: 3 # Decision tree max depth
     n_estimators: 1000 # Number of decision stumps
-    learning_rate: 0.7
+    learning_rate: 0.3

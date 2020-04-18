@@ -64,17 +64,15 @@ def train():
             test_features = featurizer.orb(X_test)
 
         clf = ASLClassifier(clf_config)
-        xval_res = clf.cross_val_score(features, y_train, kfold, 11)
-        print(xval_res)
-        print(np.mean(xval_res))
-        return
+        #xval_res = clf.cross_val_score(features, y_train, kfold, 11)
+        #print(xval_res)
+        #print(np.mean(xval_res))
 
-        clf = ASLClassifier(clf_config)
         clf.fit(features, y_train)
         pred = clf.predict(test_features)
 
         for y_true, y_pred, img in zip(y_test, pred, X_test):
-            plt.imshow(img)
+            plt.imshow(img, cmap="gray")
             plt.title("True: {}     Predicted: {}".format(
                 dataset.number_to_label(y_true),
                 dataset.number_to_label(y_pred)

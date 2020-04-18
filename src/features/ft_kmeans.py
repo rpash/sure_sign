@@ -93,7 +93,8 @@ class KMeansFeaturizer:
         if pickle_path is not None:
             self.__kmeans = utils.load_model(pickle_path)
             if self.__kmeans is not None:
-                print("Skipping training")
+                print("Computing {} descriptors using saved model".format(
+                    self.__name.upper()))
                 return self.test(data)
 
         # Use multiple processes to calculate descriptors
@@ -127,7 +128,7 @@ class KMeansFeaturizer:
         # k-means to determine a feature vector for each image
         # Use MiniBatchKmeans for speed
         self.__kmeans = MiniBatchKMeans(
-            batch_size=10, #smaller batch for less memory use
+            batch_size=10,  # smaller batch for less memory use
             n_clusters=self.__vocab_size,
             init_size=(3 * self.__vocab_size)).fit(descriptors)
 
