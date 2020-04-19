@@ -29,6 +29,7 @@ def train():
         test_path = full_path(config["dataset"]["test"])
 
         ft_name = config["featurizers"]["featurizer"]
+        ft_config = config["featurizers"][ft_name]
         clf_config = config["classification"]
         train_len = config["dataset"]["train_examples"]
         kfold = config["classification"]["k-fold"]
@@ -41,32 +42,27 @@ def train():
 
         featurizer = Featurizer()
         if ft_name == "fft":
-            features = featurizer.fft(X_train)
-            test_features = featurizer.fft(X_test)
+            features = featurizer.fft(X_train, ft_config)
+            test_features = featurizer.fft(X_test, ft_config)
             print(features.shape)
-        if ft_name == "sift":
-            pickle = full_path(config["featurizers"][ft_name]["pickle"])
-            feature_len = config["featurizers"][ft_name]["feature_size"]
-            features = featurizer.sift(
-                X_train, feature_size=feature_len, pickle_path=pickle)
-            test_features = featurizer.sift(X_test)
+        elif ft_name == "dwt":
+            features = featurizer.dwt(X_train, ft_config)
+            test_features = featurizer.dwt(X_test, ft_config)
+            print(features.shape)
+        elif ft_name == "sift":
+            features = featurizer.sift(X_train, ft_config)
+            test_features = featurizer.sift(X_test, ft_config)
         elif ft_name == "surf":
-            pickle = full_path(config["featurizers"][ft_name]["pickle"])
-            feature_len = config["featurizers"][ft_name]["feature_size"]
-            features = featurizer.surf(
-                X_train, feature_size=feature_len, pickle_path=pickle)
-            test_features = featurizer.surf(X_test)
+            features = featurizer.surf(X_train, config)
+            test_features = featurizer.surf(X_test, config)
         elif ft_name == "orb":
-            pickle = full_path(config["featurizers"][ft_name]["pickle"])
-            feature_len = config["featurizers"][ft_name]["feature_size"]
-            features = featurizer.orb(
-                X_train, feature_size=feature_len, pickle_path=pickle)
-            test_features = featurizer.orb(X_test)
+            features = featurizer.orb(X_train, config)
+            test_features = featurizer.orb(X_test, config)
 
         clf = ASLClassifier(clf_config)
-        #xval_res = clf.cross_val_score(features, y_train, kfold, 11)
-        #print(xval_res)
-        #print(np.mean(xval_res))
+        xval_res = clf.cross_val_score(features, y_train, kfold, 11)
+        print(xval_res)
+        print(np.mean(xval_res))
 
         clf.fit(features, y_train)
         pred = clf.predict(test_features)

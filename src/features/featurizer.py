@@ -21,7 +21,7 @@ class Featurizer:
         # featurizer cache
         self.__featurizer = {}
 
-    def rgb(self, data):
+    def rgb(self, data, _=None):
         """
         Transform the data into a feature vector without any transformation
         Input:
@@ -35,7 +35,7 @@ class Featurizer:
         """
         return ft_rgb.featurize(data)
 
-    def fft(self, data):
+    def fft(self, data, config):
         """
         Construct a feature vector by applying FFT to the data
         Input:
@@ -47,9 +47,11 @@ class Featurizer:
         Return:
             The image feature vectors extracted using FFT
         """
-        return ft_fft.featurize(data)
+        xdim = config["xdim"]
+        ydim = config["ydim"]
+        return ft_fft.featurize(data, (xdim, ydim))
 
-    def wavelet(self, data, wavelet="haar"):
+    def dwt(self, data, config):
         """
         Construct a feature vector by applying DWT to the data
         Input:
@@ -58,12 +60,15 @@ class Featurizer:
                 C = Image channels
                 H = Image height in pixels
                 W = Image width in pixels
+            config: YAML node for DWT configuration
         Return:
             The image feature vectors extracted using DWT
         """
-        return ft_wavelet.featurize(data, wavelet)
+        wavelet = config["wavelet"]
+        level = config["level"]
+        return ft_wavelet.featurize(data, wavelet, level)
 
-    def sift(self, data, feature_size=200, pickle_path=None, retrain=False):
+    def sift(self, data, config):
         """
         Construct a feature vector using SIFT
         Input:
@@ -78,13 +83,15 @@ class Featurizer:
         Return:
             The image feature vectors extracted using SIFT
         """
-        if "sift" not in self.__featurizer or retrain:
+        feature_size = config["feature_size"]
+        pickle_path = config["pickle"]
+        if "sift" not in self.__featurizer:
             self.__featurizer["sift"] = KMeansFeaturizer(feature_size, "sift")
             return self.__featurizer["sift"].train(data, pickle_path)
 
         return self.__featurizer["sift"].test(data)
 
-    def surf(self, data, feature_size=200, pickle_path=None, retrain=False):
+    def surf(self, data, config):
         """
         Construct a feature vector using SURF
         Input:
@@ -99,13 +106,15 @@ class Featurizer:
         Return:
             The image feature vectors extracted using SURF
         """
-        if "surf" not in self.__featurizer or retrain:
+        feature_size = config["feature_size"]
+        pickle_path = config["pickle"]
+        if "surf" not in self.__featurizer:
             self.__featurizer["surf"] = KMeansFeaturizer(feature_size, "surf")
             return self.__featurizer["surf"].train(data, pickle_path)
 
         return self.__featurizer["surf"].test(data)
 
-    def orb(self, data, feature_size=200, pickle_path=None, retrain=False):
+    def orb(self, data, config):
         """
         Construct a feature vector using ORB
         Input:
@@ -120,7 +129,9 @@ class Featurizer:
         Return:
             The image feature vectors extracted using ORB
         """
-        if "orb" not in self.__featurizer or retrain:
+        feature_size = config["feature_size"]
+        pickle_path = config["pickle"]
+        if "orb" not in self.__featurizer:
             self.__featurizer["orb"] = KMeansFeaturizer(feature_size, "orb")
             return self.__featurizer["orb"].train(data, pickle_path)
 

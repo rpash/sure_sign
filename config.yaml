@@ -7,7 +7,7 @@ dataset:
   train_examples: 1000 # Training examples per class
 
 featurizers:
-  featurizer: "surf"
+  featurizer: "fft"
   sift: # 63.5%
     pickle: "checkpoints/sift_pickle.z"
     feature_size: 400
@@ -17,8 +17,12 @@ featurizers:
   orb: # 28%
     pickle: "checkpoints/orb_pickle.z"
     feature_size: 400
-  wavelet:
+  dwt: # 67%
     wavelet: "haar"
+    level: 3
+  fft:
+    xdim: 20
+    ydim: 20
 
 classification:
   classifier: "adaboost"
