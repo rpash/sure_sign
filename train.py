@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 import src.dataset as dataset
 from src.features.featurizer import Featurizer
-from src.models.svm.classifier import ASLClassifier
+from src.models.ensemble.classifier import ASLClassifier
 import src.utils as utils
 
 def full_path(path):

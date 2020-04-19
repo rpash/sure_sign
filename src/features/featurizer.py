@@ -13,11 +13,14 @@ class Featurizer:
     Featurize data and cache features
     """
 
-    def __init__(self):
+    def __init__(self, interactive=True):
         """
         Store data in this object. The data stored here will be used to extract
         features using the featurization methods.
+        Input:
+            interactive: Whether to ask for interactive user input
         """
+        self.__interactive = interactive
         # featurizer cache
         self.__featurizer = {}
 

@@ -6,6 +6,44 @@ import os
 import joblib
 
 
+
+def label_to_number(label):
+    """
+    Convert a string label to a number label
+    Input:
+        label: a string label
+    Output:
+        number: a number label
+    """
+    label = label.lower()
+    if len(label) == 1:
+        return ord(label) - 97
+
+    if label == "del":
+        return 26
+    if label == "space":
+        return 27
+
+    # Nothing, label cannot be determined
+    return 28
+
+
+def number_to_label(number):
+    """
+    Convert a number label to a string label
+    Input:
+        number: a number label
+    Output:
+        label: a string label
+    """
+    if number < 26:
+        return chr(number + 65)  # 65 to convert to uppercase label
+    if number == 26:
+        return "del"
+    if number == 27:
+        return "space"
+    return "nothing"
+
 def yes_no(question):
     """
     Asks a yes/no question.

@@ -5,43 +5,7 @@ Load dataset into memory
 import os
 import cv2
 import numpy as np
-
-def label_to_number(label):
-    """
-    Convert a string label to a number label
-    Input:
-        label: a string label
-    Output:
-        number: a number label
-    """
-    label = label.lower()
-    if len(label) == 1:
-        return ord(label) - 97
-
-    if label == "del":
-        return 26
-    if label == "space":
-        return 27
-
-    # Nothing, label cannot be determined
-    return 28
-
-
-def number_to_label(number):
-    """
-    Convert a number label to a string label
-    Input:
-        number: a number label
-    Output:
-        label: a string label
-    """
-    if number < 26:
-        return chr(number + 65)  # 65 to convert to uppercase label
-    if number == 26:
-        return "del"
-    if number == 27:
-        return "space"
-    return "nothing"
+import src.utils as utils
 
 
 def load_asl_alphabet(train_path, test_path, train_len=1e4):
@@ -67,7 +31,7 @@ def load_asl_alphabet(train_path, test_path, train_len=1e4):
     print("Loading ASL Alphabet train...", end="", flush=True)
     counter = 0
     for path, _, filenames in os.walk(train_path):
-        label = label_to_number(os.path.basename(path).split('.')[-1])
+        label = utils.label_to_number(os.path.basename(path).split('.')[-1])
         for f in filenames:
             X_train.append(cv2.imread(
                 os.path.join(path, f), cv2.IMREAD_GRAYSCALE))
@@ -87,7 +51,7 @@ def load_asl_alphabet(train_path, test_path, train_len=1e4):
         for f in filenames:
             X_test.append(cv2.imread(os.path.join(
                 path, f), cv2.IMREAD_GRAYSCALE))
-            y_test.append(label_to_number(f.split('_')[0]))
+            y_test.append(utils.label_to_number(f.split('_')[0]))
 
     X_test = np.array(X_test)
     y_test = np.array(y_test)
