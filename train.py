@@ -53,11 +53,11 @@ def train():
             features = featurizer.sift(X_train, ft_config)
             test_features = featurizer.sift(X_test, ft_config)
         elif ft_name == "surf":
-            features = featurizer.surf(X_train, config)
-            test_features = featurizer.surf(X_test, config)
+            features = featurizer.surf(X_train, ft_config)
+            test_features = featurizer.surf(X_test, ft_config)
         elif ft_name == "orb":
-            features = featurizer.orb(X_train, config)
-            test_features = featurizer.orb(X_test, config)
+            features = featurizer.orb(X_train, ft_config)
+            test_features = featurizer.orb(X_test, ft_config)
 
         clf = ASLClassifier(clf_config)
         xval_res = clf.cross_val_score(features, y_train, kfold, 11)

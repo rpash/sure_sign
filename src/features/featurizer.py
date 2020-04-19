@@ -45,7 +45,7 @@ class Featurizer:
                 H = Image height in pixels
                 W = Image width in pixels
         Return:
-            The image feature vectors extracted using FFT
+            The image feature vectors extracted using F FT
         """
         xdim = config["xdim"]
         ydim = config["ydim"]
