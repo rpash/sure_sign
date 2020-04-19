@@ -7,11 +7,11 @@ dataset:
   train_examples: 1000 # Training examples per class
 
 featurizers:
-  featurizer: "fft"
+  featurizer: "dwt"
   sift: # 63.5%
     pickle: "checkpoints/sift_pickle.z"
     feature_size: 400
-  surf: # 68%
+  surf: # 75%
     pickle: "checkpoints/surf_pickle.z"
     feature_size: 400
   orb: # 28%
@@ -20,7 +20,10 @@ featurizers:
   dwt: # 67%
     wavelet: "haar"
     level: 3
-  fft:
+  fft: # 44%
+    xdim: 20
+    ydim: 20
+  rgb:
     xdim: 20
     ydim: 20
 
