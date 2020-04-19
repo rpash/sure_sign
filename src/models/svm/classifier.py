@@ -5,7 +5,7 @@ ASL classifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import cross_val_score
-
+import src.utils as utils
 
 class ASLClassifier:
     """
@@ -18,8 +18,16 @@ class ASLClassifier:
         Input:
             config: a YAML node with the classifier configuration
         """
-        if config["classifier"] == "adaboost":
-            self.__clf = self.__init_adaboost(config["adaboost"])
+        self.__clf_name = config["classifier"]
+        clf_config = config[self.__clf_name]
+        self.__pickle = clf_config["pickle"]
+        self.__clf = utils.load_model(self.__pickle)
+
+        if self.__clf is not None:
+            return
+
+        if self.__clf_name == "adaboost":
+            self.__clf = self.__init_adaboost(clf_config)
 
     def __init_adaboost(self, config):
         """
@@ -38,6 +46,7 @@ class ASLClassifier:
         print("\tLearning rate: {}".format(learning_rate))
 
         base_estimator = DecisionTreeClassifier(max_depth=tree_depth)
+
         clf = AdaBoostClassifier(base_estimator=base_estimator,
                                  n_estimators=n_estimators,
                                  learning_rate=learning_rate)
@@ -51,6 +60,8 @@ class ASLClassifier:
             y: (N) vector of N training data labels
         """
         self.__clf.fit(X, y)
+        if self.__pickle is not None:
+            utils.save_model(self.__clf, self.__pickle)
 
     def predict(self, X):
         """

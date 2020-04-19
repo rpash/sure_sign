@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import yaml
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +9,7 @@ import matplotlib.pyplot as plt
 import src.dataset as dataset
 from src.features.featurizer import Featurizer
 from src.models.svm.classifier import ASLClassifier
-
+import src.utils as utils
 
 def full_path(path):
     """
@@ -37,22 +38,21 @@ def train():
         X_train, y_train, X_test, y_test = dataset.load_asl_alphabet(
             train_path, test_path, train_len=train_len)
 
-        print(X_train.shape)
-        print(X_test.shape)
+        N, H, W = X_train.shape
+        print("Loaded {} training images of size ({}, {})".format(N, H, W))
+        N, H, W = X_test.shape
+        print("Loaded {} test images of size ({}, {})".format(N, H, W))
 
         featurizer = Featurizer()
         if ft_name == "fft":
             features = featurizer.fft(X_train, ft_config)
             test_features = featurizer.fft(X_test, ft_config)
-            print(features.shape)
         elif ft_name == "rgb":
             features = featurizer.fft(X_train, ft_config)
             test_features = featurizer.fft(X_test, ft_config)
-            print(features.shape)
         elif ft_name == "dwt":
             features = featurizer.dwt(X_train, ft_config)
             test_features = featurizer.dwt(X_test, ft_config)
-            print(features.shape)
         elif ft_name == "sift":
             features = featurizer.sift(X_train, ft_config)
             test_features = featurizer.sift(X_test, ft_config)
@@ -63,13 +63,28 @@ def train():
             features = featurizer.orb(X_train, ft_config)
             test_features = featurizer.orb(X_test, ft_config)
 
+        N, M = features.shape
+        print("Extracted {} training features of length {}".format(N, M))
+        N, M = test_features.shape
+        print("Extracted {} test features of length {}".format(N, M))
+
+        print("Loading classifier")
         clf = ASLClassifier(clf_config)
         xval_res = clf.cross_val_score(features, y_train, kfold, 11)
         print(xval_res)
         print(np.mean(xval_res))
 
+        start = time.time()
         clf.fit(features, y_train)
+        end = time.time()
+        print("Fit model in {} seconds".format(end - start))
+        start = time.time()
         pred = clf.predict(test_features)
+        end = time.time()
+        print("Predicted test dataset in {} seconds".format(end - start))
+
+        if not utils.yes_no("Evaluate on test data?"):
+            return
 
         for y_true, y_pred, img in zip(y_test, pred, X_test):
             plt.imshow(img, cmap="gray")

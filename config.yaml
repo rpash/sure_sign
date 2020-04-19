@@ -34,3 +34,4 @@ classification:
     tree_max_depth: 3 # Decision tree max depth
     n_estimators: 1000 # Number of decision stumps
     learning_rate: 0.3
+    pickle: "checkpoints/adaboost_pickle.z"
