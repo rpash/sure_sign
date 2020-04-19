@@ -21,7 +21,7 @@ class Featurizer:
         # featurizer cache
         self.__featurizer = {}
 
-    def rgb(self, data, _=None):
+    def rgb(self, data, config):
         """
         Transform the data into a feature vector without any transformation
         Input:
@@ -33,7 +33,10 @@ class Featurizer:
         Return:
             The original set of images transformed into a feature vector
         """
-        return ft_rgb.featurize(data)
+        xdim = config["xdim"]
+        ydim = config["ydim"]
+
+        return ft_rgb.featurize(data, (xdim, ydim))
 
     def fft(self, data, config):
         """

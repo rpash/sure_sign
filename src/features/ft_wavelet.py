@@ -23,5 +23,5 @@ def featurize(data, wavelet, level):
     Output:
         features: (N, M) matrix of N features of length M
     """
-    print("Featurizing using level {} {} wavelet dcomposition".format(level, wavelet))
+    print("Featurizing using level {} {} wavelet decomposition".format(level, wavelet))
     return np.array([__transform(img, wavelet, level) for img in data])

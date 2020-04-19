@@ -45,6 +45,10 @@ def train():
             features = featurizer.fft(X_train, ft_config)
             test_features = featurizer.fft(X_test, ft_config)
             print(features.shape)
+        elif ft_name == "rgb":
+            features = featurizer.fft(X_train, ft_config)
+            test_features = featurizer.fft(X_test, ft_config)
+            print(features.shape)
         elif ft_name == "dwt":
             features = featurizer.dwt(X_train, ft_config)
             test_features = featurizer.dwt(X_test, ft_config)
