@@ -3,8 +3,9 @@ A collection of utility functions
 """
 
 import os
+import sys
+import logging
 import joblib
-
 
 
 def label_to_number(label):
@@ -44,6 +45,7 @@ def number_to_label(number):
         return "space"
     return "nothing"
 
+
 def yes_no(question):
     """
     Asks a yes/no question.
@@ -62,6 +64,39 @@ def yes_no(question):
         return yes_no(question)
 
 
+def __log_level(level):
+    if level == "debug":
+        return logging.DEBUG
+    elif level == "warning":
+        return logging.WARNING
+    elif level == "quiet":
+        return logging.CRITICAL
+    return logging.NOTSET
+
+
+def init_logger(config):
+    """
+    Initialize the loggers
+    """
+    level = __log_level(config["log_level"])
+    logging.basicConfig(level=level, format="%(msg)s")
+
+    formatter = logging.Formatter("%(name)s: %(msg)s")
+    sh = logging.StreamHandler(stream=sys.stdout)
+    sh.setFormatter(formatter)
+
+    cfl_logger = logging.getLogger("Classifier")
+    cfl_logger.setLevel(__log_level(config["featurizers"]["log_level"]))
+    cfl_logger.addHandler(sh)
+    cfl_logger.propagate = False
+
+    ft_logger = logging.getLogger("Featurizer")
+    ft_logger.setLevel(__log_level(config["classification"]["log_level"]))
+    ft_logger.addHandler(sh)
+    ft_logger.propagate = False
+
+
+
 def save_model(model, path):
     """
     Save a model for later use
@@ -75,6 +110,9 @@ def save_model(model, path):
     joblib.dump(model, path, compress=9)
 
 
+__ALWAYS_LOAD = False
+
+
 def load_model(path):
     """
     Load a model from a pickle file
@@ -84,10 +122,20 @@ def load_model(path):
         model: The loaded model
     """
     if not os.path.exists(path):
-        print("No pickle file found at {}".format(path))
         return None
 
-    if not yes_no("Do you want to load pickle file at {}?".format(path)):
+    global __ALWAYS_LOAD
+    if __ALWAYS_LOAD:
+        return joblib.load(path)
+    elif not yes_no("Do you want to load pickle file at {}?".format(path)):
         return None
 
-    return joblib.load(path)
+    return
+
+
+def ask_for_load(always_load):
+    """
+    Set whether to ask before loading a pickled model
+    """
+    global __ALWAYS_LOAD
+    __ALWAYS_LOAD = always_load

@@ -3,12 +3,26 @@ ASL decoder app
 """
 
 import os
+import logging
 import yaml
 import cv2
 import numpy as np
+import scipy.stats
 from src.features.featurizer import Featurizer
 from src.models.ensemble.classifier import ASLClassifier
 import src.utils as utils
+
+class Buffer:
+    def __init__(self, max_size=5):
+        self.__queue = [utils.label_to_number("nothing")] * max_size
+
+    def push(self, val):
+        self.__queue.pop(0)
+        self.__queue.append(val)
+        return scipy.stats.mode(self.__queue).mode[0]
+
+    def print(self):
+        print(self.__queue)
 
 
 def full_path(path):
@@ -32,7 +46,7 @@ def get_img_num(path):
                 cur_num = int(file_parts[1])
                 if cur_num > img_num:
                     img_num = cur_num
-            except ValueError:
+            except:
                 continue
     return img_num + 1
 
@@ -63,7 +77,7 @@ def run():
         config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
     if config is None:
-        print("Could not load config file.")
+        logging.warning("Could not load config file.")
         return
 
     ft_name = config["featurizers"]["featurizer"]
@@ -71,9 +85,11 @@ def run():
     clf_config = config["classification"]
     dt = 1000.0 / config["app"]["fps"]
     save_path = full_path(config["app"]["save_path"])
+    utils.init_logger(config)
+    utils.ask_for_load(config["always_load"])
     img_num = get_img_num(save_path)
 
-    featurizer = Featurizer(interactive=False)
+    featurizer = Featurizer()
     featurize = choose_featurizer(featurizer, ft_name)
     classifier = ASLClassifier(clf_config)
     cap = cv2.VideoCapture(0)
@@ -85,7 +101,7 @@ def run():
     font_line_type = cv2.LINE_AA
 
     if not cap.isOpened():
-        print("Cannot open camera")
+        logging.warning("Cannot open camera")
         return
 
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -98,11 +114,7 @@ def run():
     font_y = ymin
     font_x = int(0.1 * height)
 
-    ret, frame = cap.read()
-    print(xmin, xmax)
-    print(ymin, ymax)
-    print(frame.shape)
-
+    buf = Buffer(5)
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -110,14 +122,13 @@ def run():
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         img = img[xmin:xmax, ymin:ymax]
         feature = featurize(img[np.newaxis, ...], ft_config)
-        pred = utils.number_to_label(classifier.predict(feature)[0])
+        pred = utils.number_to_label(buf.push(classifier.predict(feature)[0]))
 
         frame = cv2.putText(frame, pred, (font_y, font_x), font, font_scale,
                             font_color, font_thickness, font_line_type)
         frame = cv2.rectangle(frame, (ymin, xmin),
                               (ymax, xmax), font_color, font_thickness)
 
-        print(pred)
         cv2.imshow("ASL Classifier", frame)
         key = cv2.waitKey(int(dt)) & 0xff
         if key == ord('y'):

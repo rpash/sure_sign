@@ -1,5 +1,7 @@
 ---
 kaggle_dataset: "grassknoted/asl-alphabet" # Approx 1GB
+always_load: True # Always load pickle files where available
+log_level: "quiet" # quiet, debug, warning
 
 dataset:
   test: "dataset/asl_alphabet_test"
@@ -7,15 +9,16 @@ dataset:
   train_examples: 1000 # Training examples per class
 
 featurizers:
-  featurizer: "surf"
+  log_level: "quiet" # quiet, debug, warning
+  featurizer: "dwt"
   sift: # 63.5%
-    pickle: "checkpoints/sift_pickle.z"
+    pickle: "checkpoints/sift/sift_pickle.z"
     feature_size: 400
-  surf: # 75%
-    pickle: "checkpoints/surf_pickle.z"
+  surf: # 76%
+    pickle: "checkpoints/surf/surf_pickle.z"
     feature_size: 400
   orb: # 28%
-    pickle: "checkpoints/orb_pickle.z"
+    pickle: "checkpoints/orb/orb_pickle.z"
     feature_size: 400
   dwt: # 67%
     wavelet: "haar"
@@ -28,13 +31,14 @@ featurizers:
     ydim: 20
 
 classification:
+  log_level: "quiet" # quiet, debug, warning
   classifier: "adaboost"
   k-fold: 10 # Number of folds to use in k-fold cross validation
   adaboost:
     tree_max_depth: 3 # Decision tree max depth
     n_estimators: 1000 # Number of decision stumps
     learning_rate: 0.3
-    pickle: "checkpoints/adaboost_pickle.z"
+    pickle: "checkpoints/dwt/adaboost_pickle.z"
 
 app:
   fps: 30

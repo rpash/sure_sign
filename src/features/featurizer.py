@@ -13,14 +13,11 @@ class Featurizer:
     Featurize data and cache features
     """
 
-    def __init__(self, interactive=True):
+    def __init__(self):
         """
         Store data in this object. The data stored here will be used to extract
         features using the featurization methods.
-        Input:
-            interactive: Whether to ask for interactive user input
         """
-        self.__interactive = interactive
         # featurizer cache
         self.__featurizer = {}
 
@@ -92,7 +89,8 @@ class Featurizer:
         feature_size = config["feature_size"]
         pickle_path = config["pickle"]
         if "sift" not in self.__featurizer:
-            self.__featurizer["sift"] = KMeansFeaturizer(feature_size, "sift")
+            self.__featurizer["sift"] = KMeansFeaturizer(
+                feature_size, "sift")
             return self.__featurizer["sift"].train(data, pickle_path)
 
         return self.__featurizer["sift"].test(data)
@@ -115,7 +113,8 @@ class Featurizer:
         feature_size = config["feature_size"]
         pickle_path = config["pickle"]
         if "surf" not in self.__featurizer:
-            self.__featurizer["surf"] = KMeansFeaturizer(feature_size, "surf")
+            self.__featurizer["surf"] = KMeansFeaturizer(
+                feature_size, "surf")
             return self.__featurizer["surf"].train(data, pickle_path)
 
         return self.__featurizer["surf"].test(data)
@@ -138,7 +137,8 @@ class Featurizer:
         feature_size = config["feature_size"]
         pickle_path = config["pickle"]
         if "orb" not in self.__featurizer:
-            self.__featurizer["orb"] = KMeansFeaturizer(feature_size, "orb")
+            self.__featurizer["orb"] = KMeansFeaturizer(
+                feature_size, "orb")
             return self.__featurizer["orb"].train(data, pickle_path)
 
         return self.__featurizer["orb"].test(data)

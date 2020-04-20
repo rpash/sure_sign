@@ -2,6 +2,7 @@
 
 import os
 import time
+import logging
 import yaml
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,10 +19,9 @@ def full_path(path):
     this_path = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(this_path, path)
 
-
 def train():
     """
-    Train! TBD TODO
+    Train AdaBoost on given classifier.
     """
     with open(r"config.yaml") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
@@ -34,15 +34,19 @@ def train():
         clf_config = config["classification"]
         train_len = config["dataset"]["train_examples"]
         kfold = config["classification"]["k-fold"]
+        utils.ask_for_load(config["always_load"])
+        utils.init_logger(config)
 
+        # Read images from dataset
         X_train, y_train, X_test, y_test = dataset.load_asl_alphabet(
             train_path, test_path, train_len=train_len)
 
         N, H, W = X_train.shape
-        print("Loaded {} training images of size ({}, {})".format(N, H, W))
+        logging.info("Loaded {} training images of size ({}, {})".format(N, H, W))
         N, H, W = X_test.shape
-        print("Loaded {} test images of size ({}, {})".format(N, H, W))
+        logging.info("Loaded {} test images of size ({}, {})".format(N, H, W))
 
+        # Extract features based on config
         featurizer = Featurizer()
         if ft_name == "fft":
             features = featurizer.fft(X_train, ft_config)
@@ -64,39 +68,38 @@ def train():
             test_features = featurizer.orb(X_test, ft_config)
 
         N, M = features.shape
-        print("Extracted {} training features of length {}".format(N, M))
+        logging.info("Extracted {} training features of length {}".format(N, M))
         N, M = test_features.shape
-        print("Extracted {} test features of length {}".format(N, M))
+        logging.info("Extracted {} test features of length {}".format(N, M))
 
-        print("Loading classifier")
+        # Cross validations
         clf = ASLClassifier(clf_config)
         xval_res = clf.cross_val_score(features, y_train, kfold, 11)
-        print(xval_res)
-        print(np.mean(xval_res))
+        logging.critical(xval_res)
+        logging.critical(np.mean(xval_res))
 
+        # Predictions on test images
         start = time.time()
         clf.fit(features, y_train)
         end = time.time()
-        print("Fit model in {} seconds".format(end - start))
+        logging.info("Fit model in {} seconds".format(end - start))
         start = time.time()
         pred = clf.predict(test_features)
         end = time.time()
-        print("Predicted test dataset in {} seconds".format(end - start))
+        logging.info("Predicted test dataset in {} seconds".format(end - start))
 
-        if not utils.yes_no("Evaluate on test data?"):
-            return
-
+        # Plot each prediction and ground truth for test images
         for y_true, y_pred, img in zip(y_test, pred, X_test):
             plt.imshow(img, cmap="gray")
             plt.title("True: {}     Predicted: {}".format(
-                dataset.number_to_label(y_true),
-                dataset.number_to_label(y_pred)
+                utils.number_to_label(y_true),
+                utils.number_to_label(y_pred)
             ))
             plt.show()
 
-        print(pred)
-        print(y_test)
-        print(np.sum(pred == y_test) / len(pred))
+        logging.critical(pred)
+        logging.critical(y_test)
+        logging.critical(np.sum(pred == y_test) / len(pred))
 
 
 if __name__ == '__main__':

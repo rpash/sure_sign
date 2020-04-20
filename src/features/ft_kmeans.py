@@ -2,6 +2,7 @@
 Featurization method collection for image descriptors quantized by k-means
 """
 import os
+import logging
 from multiprocessing import Pool
 import itertools
 import numpy as np
@@ -62,11 +63,22 @@ def _compute_features(args):
 
 
 class KMeansFeaturizer:
-    def __init__(self, vocab_size, featurizer="sift"):
+    def __init__(self, vocab_size, featurizer):
+        """
+        Initialize a KMeansFeaturizer with the given keypoint featurizer
+        Input:
+            vocab_size: Size of the features to be generated. This is the number
+                        of clusters K Means will cluster the keypoints into
+            featurizer: Name of the keypoint featurizer. Currently supports
+                        "sift"
+                        "surf"
+                        "orb"
+        """
         self.__vocab_size = vocab_size
         self.__kmeans = None
         self.__name = featurizer
         self.__featurizer = _get_featurizer(featurizer)
+        self.__logger = logging.getLogger("Featurizer")
 
     def train(self, data, pickle_path=None):
         """
@@ -93,7 +105,9 @@ class KMeansFeaturizer:
         if pickle_path is not None:
             self.__kmeans = utils.load_model(pickle_path)
             if self.__kmeans is not None:
-                print("Computing {} descriptors using saved model".format(
+                self.__logger.warning(
+                    "No pickle file found at {}".format(pickle_path))
+                self.__logger.info("Computing {} descriptors using saved model".format(
                     self.__name.upper()))
                 return self.test(data)
 
@@ -106,7 +120,7 @@ class KMeansFeaturizer:
         features = np.zeros((n_images, self.__vocab_size))
         nprocs = (os.cpu_count() - 1) if os.cpu_count() > 1 else 1
         nprocs = nprocs if n_images > (nprocs * 20) else 1
-        print("Computing {} descriptors using {} processes".format(
+        self.__logger.info("Computing {} descriptors using {} processes".format(
             self.__name.upper(), nprocs))
         if nprocs > 1:
             subsets = np.array_split(data, nprocs, axis=0)

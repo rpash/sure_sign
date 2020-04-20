@@ -3,6 +3,7 @@ Load dataset into memory
 """
 
 import os
+import logging
 import cv2
 import numpy as np
 import src.utils as utils
@@ -28,7 +29,7 @@ def load_asl_alphabet(train_path, test_path, train_len=1e4):
     X_train, y_train = [], []
     X_test, y_test = [], []
 
-    print("Loading ASL Alphabet train...", end="", flush=True)
+    logging.info("Loading ASL Alphabet train")
     counter = 0
     for path, _, filenames in os.walk(train_path):
         label = utils.label_to_number(os.path.basename(path).split('.')[-1])
@@ -44,9 +45,7 @@ def load_asl_alphabet(train_path, test_path, train_len=1e4):
     X_train = np.array(X_train)
     y_train = np.array(y_train)
 
-    print("Done")
-
-    print("Loading ASL Alphabet test...", end="", flush=True)
+    logging.info("Loading ASL Alphabet test")
     for path, _, filenames in os.walk(test_path):
         for f in filenames:
             X_test.append(cv2.imread(os.path.join(
@@ -55,7 +54,5 @@ def load_asl_alphabet(train_path, test_path, train_len=1e4):
 
     X_test = np.array(X_test)
     y_test = np.array(y_test)
-
-    print("Done")
 
     return X_train, y_train, X_test, y_test

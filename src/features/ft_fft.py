@@ -2,13 +2,14 @@
 Featurization method for FFT
 """
 
-from math import exp
+import logging
 import numpy as np
 import scipy.fftpack as fp
 
 
 def __transform(img, shape):
     return np.abs(fp.fft2(img, shape=shape)).flatten()
+
 
 def featurize(data, shape):
     """
@@ -18,5 +19,6 @@ def featurize(data, shape):
     Output:
         features: (N, M) matrix of N features of length M
     """
-    print("Featurizing using {}-point FFT2".format(shape))
+    logger = logging.getLogger("Featurizer")
+    logger.info("Featurizing using {}-point FFT2".format(shape))
     return np.array([__transform(img, shape) for img in data])

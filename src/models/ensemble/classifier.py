@@ -2,10 +2,12 @@
 ASL classifier
 """
 
+import logging
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import cross_val_score
 import src.utils as utils
+
 
 class ASLClassifier:
     """
@@ -40,10 +42,10 @@ class ASLClassifier:
         tree_depth = config["tree_max_depth"]
         n_estimators = config["n_estimators"]
         learning_rate = config["learning_rate"]
-        print("Initializing Adaboost classifier with")
-        print("\tMax decision tree depth: {}".format(tree_depth))
-        print("\tNumber of estimators: {}".format(n_estimators))
-        print("\tLearning rate: {}".format(learning_rate))
+        logging.info("Initializing Adaboost classifier with")
+        logging.info("\tMax decision tree depth: {}".format(tree_depth))
+        logging.info("\tNumber of estimators: {}".format(n_estimators))
+        logging.info("\tLearning rate: {}".format(learning_rate))
 
         base_estimator = DecisionTreeClassifier(max_depth=tree_depth)
 
@@ -94,6 +96,6 @@ class ASLClassifier:
         Output:
             score: Array of scores of the estimator for each fold
         """
-        print("Performing {}-fold cross validation using {} processes".format(
+        logging.info("Performing {}-fold cross validation using {} processes".format(
             k, nprocs))
         return cross_val_score(self.__clf, X, y, cv=k, n_jobs=nprocs)
