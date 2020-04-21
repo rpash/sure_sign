@@ -6,7 +6,7 @@ log_level: "quiet" # quiet, debug, warning
 dataset:
   test: "dataset/asl_alphabet_test"
   train: "dataset/asl_alphabet_train"
-  train_examples: 1000 # Training examples per class
+  train_examples: 3000 # Training examples per class
 
 featurizers:
   log_level: "quiet" # quiet, debug, warning
@@ -35,7 +35,7 @@ classification:
   classifier: "adaboost"
   k-fold: 10 # Number of folds to use in k-fold cross validation
   adaboost:
-    tree_max_depth: 3 # Decision tree max depth
+    tree_max_depth: 4 # Decision tree max depth
     n_estimators: 1000 # Number of decision stumps
     learning_rate: 0.3
     pickle: "checkpoints/dwt/adaboost_pickle.z"
