@@ -2,6 +2,8 @@
 
 Hand sign recognition for EECS 351
 
+Find out more [here](https://sites.google.com/umich.edu/asuresign/home).
+
 A Sure Sign compares several featurization methods' performance in classifying ASL hand gestures. A simplified architecture of the application can be seen below:
 
 ![architecture.png](res/architecture.png)
