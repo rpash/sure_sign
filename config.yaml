@@ -10,7 +10,7 @@ dataset:
 
 featurizers:
   log_level: "quiet" # quiet, debug, warning
-  featurizer: "dwt"
+  featurizer: "surf"
   sift: # 63.5%
     pickle: "checkpoints/sift/sift_pickle.z"
     feature_size: 400
@@ -38,7 +38,7 @@ classification:
     tree_max_depth: 4 # Decision tree max depth
     n_estimators: 1000 # Number of decision stumps
     learning_rate: 0.3
-    pickle: "checkpoints/dwt/adaboost_pickle.z"
+    pickle: "checkpoints/surf/adaboost_pickle.z"
 
 app:
   fps: 30
