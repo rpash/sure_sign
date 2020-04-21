@@ -6,7 +6,7 @@ A Sure Sign compares several featurization methods' performance in classifying A
 
 ![architecture.png](res/architecture.png)
 
-## Featurizatioarchitecture
+## Featurization
 
 A Sure Sign supports several featurization methods for images.
 
