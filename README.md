@@ -26,6 +26,8 @@ The following image shows an example of the kinds of keypoints SIFT, SURF, and O
 
 A Sure Sign uses the AdaBoost ensemble classifier with decision trees to classify the featurized images. The features calculated by the featurizer go directly to the classifier without any further processing. We are classifying 29 classes: 26 letters of the English alphabet, `space`, `del`, and `nothing`.
 
+It is possible to add other classifiers to A Sure Sign. We had originally intended to try several and the project is designed with that in mind.
+
 ## Dataset
 
 A Sure Sign was trained using the ASL alphabet dataset on Kaggle found [here](https://www.kaggle.com/grassknoted/asl-alphabet). You can download the dataset using `download_dataset.py`. Keep in mind, Kaggle datasets require you to authenticate using a Kaggle account. More information can be found in `download_dataset.py` on how to do this.
@@ -59,7 +61,7 @@ pip install -r requirements.txt
 A Sure Sign uses SIFT and SURF which are non-free modules of OpenCV and cannot be distributed as binaries. Running the `install_opencv.sh` script will clone, build, and install the correct version of OpenCV with the non-free modules. If using a virtualenvironment, the script tries to create a symbolic link between the global install of OpenCV and the virtualenvironment, but depending on your situation you may need to do this yourself. Generally, this command will suffice:
 
 ```bash
-    ln -s "/usr/local/lib/python3.8/site-packages/cv2" "env/lib/python3.8/site-packages/cv2"
+ln -s "/usr/local/lib/python3.8/site-packages/cv2" "env/lib/python3.8/site-packages/cv2"
 ```
 
 You will need to replace `python3.8` with your python version and `env` with your virtualenvironment directory.
