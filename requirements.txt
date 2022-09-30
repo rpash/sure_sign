@@ -5,7 +5,7 @@ chardet==3.0.4
 cycler==0.10.0
 idna==2.9
 isort==4.3.21
-joblib==0.14.1
+joblib==1.2.0
 kaggle==1.5.6
 kiwisolver==1.2.0
 lazy-object-proxy==1.4.3
