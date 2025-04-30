@@ -3,7 +3,7 @@ autopep8==1.5
 certifi==2022.12.7
 chardet==3.0.4
 cycler==0.10.0
-idna==2.9
+idna==3.7
 isort==4.3.21
 joblib==1.2.0
 kaggle==1.5.6
