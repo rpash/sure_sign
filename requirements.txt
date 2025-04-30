@@ -23,7 +23,7 @@ pytz==2019.3
 PyWavelets==1.1.1
 PyYAML==5.4
 requests==2.23.0
-scikit-learn==0.22.2.post1
+scikit-learn==1.5.1
 scipy==1.4.1
 six==1.14.0
 sklearn==0.0
